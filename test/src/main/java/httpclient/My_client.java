@@ -3,6 +3,7 @@ package httpclient;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -13,6 +14,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.params.HttpParams;
@@ -21,6 +23,7 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
 
 import com.fasterxml.jackson.core.JsonParser;
 
@@ -47,6 +50,7 @@ public class My_client extends CloseableHttpClient{
 	public URI makeUrl()
 	{
 		URI uri = null;
+		//String encoded_title = URLEncoder.encode(movie_title);
 		try {
 			uri = new URIBuilder().setScheme("http")
 					.setHost("www.omdbapi.com")
@@ -68,12 +72,19 @@ public class My_client extends CloseableHttpClient{
 		 ObjectMapper mapper = new ObjectMapper();  
 		    Data my_data = null;
 			try {
+				
+				
 				my_data = mapper.readValue(response.getEntity().getContent(), Data.class);
 				
 				imdbRatingString = my_data.getImdbRating().toString();
 						
 				
-			} catch (JsonParseException e1) {
+			}
+			catch (UnrecognizedPropertyException e1)
+			{
+				//do nothing
+			}
+			catch (JsonParseException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (JsonMappingException e1) {
